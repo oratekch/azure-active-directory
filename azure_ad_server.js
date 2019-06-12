@@ -29,7 +29,7 @@ OAuth.registerService('azureAd', 2, null, function(query) {
         profile: {
             displayName: graphUser.displayName,
             givenName: graphUser.givenName,
-            initials: graphUser.initials || graphUser.givenName.charAt(0).toUpperCase()+graphUser.surname.charAt(0).toUpperCase(),
+            initials: graphUser.initials,
             surname: graphUser.surname,
         }
     };

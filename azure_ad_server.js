@@ -1,9 +1,9 @@
-AzureAd.whitelistedFields = ['objectId', 'userPrincipleName', 'mail', 'displayName', 'surname', 'givenName', 'mailNickname'];
+AzureAd.whitelistedFields = ['objectId', 'userPrincipalName', 'mail', 'displayName', 'surname', 'givenName', 'mailNickname'];
 
 OAuth.registerService('azureAd', 2, null, function(query) {
 
     var tokens = getTokensFromCode(AzureAd.resources.graph.resourceUri, query.code);
-    var graphUser = AzureAd.resources.graph.getUser(tokens.accessToken)
+    var graphUser = AzureAd.resources.graph.getUser(tokens.accessToken);
     var serviceData = {
         accessToken: tokens.accessToken,
         expiresAt: (+new Date) + (1000 * tokens.expiresIn)
@@ -11,8 +11,8 @@ OAuth.registerService('azureAd', 2, null, function(query) {
 
     var fields = _.pick(graphUser, AzureAd.whitelistedFields);
 
-    //must re-write the objectId field to id - meteor expects a field named "id"
-    fields.id = fields.objectId; //we should add
+    // must re-write the objectId field to id - meteor expects a field named "id"
+    fields.id = fields.objectId; // we should add
     delete fields.objectId;
 
     _.extend(serviceData, fields);
@@ -23,18 +23,17 @@ OAuth.registerService('azureAd', 2, null, function(query) {
     if (tokens.refreshToken)
         serviceData.refreshToken = tokens.refreshToken;
 
-    var emailAddress = graphUser.mail || graphUser.userPrincipleName;
+    var emailAddress = graphUser.userPrincipalName || graphUser.mail;
 
     var options = {
         profile: {
             displayName: graphUser.displayName,
             givenName: graphUser.givenName,
             surname: graphUser.surname,
-            initials: graphUser.mailNickname.toUpperCase(),
-        }
+        },
     };
 
-    if (!!emailAddress){
+    if (!!emailAddress) {
         options.emails = [{
             address : emailAddress,
             verified: true
